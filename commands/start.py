@@ -2,6 +2,8 @@ from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, Callback
 from aiogram.utils.exceptions import MessageNotModified, BotBlocked, InvalidQueryID
 from objects.globals import dispatcher, logger, config, CompleteCache, bot
 from objects import globals
+from modules import database
+
 
 import json
 from aiohttp import ClientSession
@@ -14,11 +16,14 @@ async def start_command(message: Message):
     globals.add_usage_stats()
     try:
         data: list = message.text.split()
-        # if len(data) > 1: await database.create_user(message.from_user.id, data[1])
-        # else: await database.create_user(message.from_user.id)
+        if len(data) > 1:
+            await database.create_user(message.from_user.id, data[1])
+            
+        else: 
+            await database.create_user(user_id = message.from_user.id)
 
-        if len(data) > 1: await CompleteCache.create_user(message.from_user.id, data[1])
-        else: await CompleteCache.create_user(message.from_user.id)
+        # if len(data) > 1: await CompleteCache.create_user(message.from_user.id, data[1])
+        # else: await CompleteCache.create_user(message.from_user.id)
 
         """
         if globals.config["status_obyaz"] == True:
@@ -38,13 +43,13 @@ async def start_command(message: Message):
         else: markup.add(KeyboardButton("👍Полезные сервисы"))
 
         await message.answer(
-                "Поиск песен - /search\n"
-                "Популярные песни - /top\n"
-                "Новые песни - /new\n"
-                "Музыка из ВК страницы - /vk\n\n"
-                "Мои аудиозаписи - /mymusic\n"
-                "Или просто ВОСПОЛЬЗУЙТЕСЬ нашим меню:"
-                "[ ](https://telegra.ph/file/e21fb04bef6c4e0b6bddf.jpg)",
+                f"Поиск песен - /search\n"
+                f"Популярные песни - /top\n"
+                f"Новые песни - /new\n"
+                f"Музыка из ВК страницы \- /vk\n\n"
+                f"Мои аудиозаписи - /mymusic\n"
+                f"Или просто ВОСПОЛЬЗУЙТЕСЬ нашим меню:"
+                f"[ ](https://telegra.ph/file/e21fb04bef6c4e0b6bddf.jpg)",
                 reply_markup=markup,
                 reply=True
         )

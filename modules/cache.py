@@ -31,6 +31,7 @@ class Cache:
         while True:
             start_time = datetime.utcnow()
             data = await self.music_api.chart()
+            print(data)
 
             _temp: list = []
             async with ClientSession(skip_auto_headers=["User-Agent"]) as session:

@@ -1,14 +1,14 @@
 from aiogram.types import Message
 from aiogram.utils.exceptions import MessageNotModified, BotBlocked, InvalidQueryID
 from objects.globals import dispatcher, logger
-#from modules import database
 from objects import globals
+from modules import database
 
 @dispatcher.message_handler(lambda message: message.text == "👍Полезные сервисы")
 async def information_command(message: Message):
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(message.from_user.id)
+        await database.create_user(message.from_user.id)
 
         await message.answer(   
                 "*ПОЛЕЗНЫЕ СЕРВИСЫ!* 😜\n"

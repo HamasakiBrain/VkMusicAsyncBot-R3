@@ -3,6 +3,8 @@ from aiogram.utils.exceptions import MessageNotModified, BotBlocked, InvalidQuer
 from objects.globals import dispatcher, logger, config
 from objects import globals
 from modules import database
+from db_models.User import User
+
 from datetime import datetime, timedelta
 
 @dispatcher.message_handler(commands="stat888")
@@ -10,8 +12,8 @@ from datetime import datetime, timedelta
 async def stats_command(message: Message):
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(message.from_user.id)
-        await message.answer(f"Пользователей - {(len(globals.CompleteCache.users_ids))}\n"
+        await database.create_user(message.from_user.id)
+        await message.answer(f"Пользователей - {(await User.objects.count())}\n"
                              f"Активных за 24 часа - {await database.last_day_users()}\n"
                              f"Новых за 24 часа - {await database.last_day_new_users()}\n\n"
                              f"Рассылка:\n"

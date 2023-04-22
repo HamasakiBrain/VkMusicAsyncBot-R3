@@ -1,6 +1,5 @@
-from databases import Database
 from orm import Model, Integer, DateTime, Text, Boolean, ModelRegistry
-from objects.globals import database
+from objects.globals import database, metadata
 from datetime import datetime
 
 class User(Model):

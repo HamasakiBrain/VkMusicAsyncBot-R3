@@ -22,7 +22,7 @@ async def download(query: CallbackQuery):
     
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(query.from_user.id)   
+        await database.create_user(query.from_user.id)   
 
         if globals.config["require_subscription"]:
             flag:bool = True
@@ -90,7 +90,7 @@ async def download(query: CallbackQuery):
 
         markup = InlineKeyboardMarkup(row_width=2)
 
-        if await CompleteCache.user_has_audio(query.from_user.id, int(audio_data[0]), int(audio_data[1])):
+        if await database.user_has_audio(query.from_user.id, int(audio_data[0]), int(audio_data[1])):
             markup.add(InlineKeyboardButton("🗑 Удалить из аудиозаписей", callback_data=f"my_audio_remove_{audio_id}"))
         else: markup.add(InlineKeyboardButton("➕ Добавить в аудиозаписи", callback_data=f"my_audio_add_{audio_id}"))
 

@@ -1,3 +1,4 @@
+from databases import Database
 from db_models.User import User
 from db_models.Audio import Audio
 from db_models.UserAudio import UserAudio
@@ -7,41 +8,20 @@ from datetime import datetime, timedelta
 from sqlite3 import IntegrityError
 import time
 
-# async def create_user(user_id: int, ref_link: str = None):
-#     start_time = time.time()
-#     try:
-#         if user_id in globals.users_ids:
-#             user = await User.objects.get(user_id=user_id)
-#             await user.update(last_seen=datetime.utcnow(), is_banned=False)
-#
-#             for cached_user in globals.cached_users:
-#                 if cached_user["user_id"] == user_id:
-#                     cached_user["last_seen"] = datetime.utcnow()
-#                     cached_user["is_banned"] = False
-#                     return
-#             return
-#         else:
-#             created_user = await User.objects.create(user_id=user_id, created=datetime.utcnow(), last_seen=datetime.utcnow(), ref_link=ref_link, is_banned=False)
-#             globals.users_ids.append(user_id)
-#             globals.cached_users.append({"user_id": created_user.user_id, "created": created_user.created, "last_seen": created_user.last_seen})
-#
-#             return
-#
-#         if user_id not in [u["user_id"] for u in globals.cached_users]:
-#             if await User.objects.filter(user_id=user_id).count() == 0:
-#                 created_user = await User.objects.create(user_id=user_id, created=datetime.utcnow(), last_seen=datetime.utcnow(), ref_link=ref_link, is_banned=False)
-#                 globals.cached_users.append({"user_id": created_user.user_id, "created": created_user.created, "last_seen": created_user.last_seen})
-#         else:
-#             user = await User.objects.get(user_id=user_id)
-#             await user.update(last_seen=datetime.utcnow(), is_banned=False)
-#
-#             for cached_user in globals.cached_users:
-#                 if cached_user["user_id"] == user_id:
-#                     cached_user["last_seen"] = datetime.utcnow()
-#                     cached_user["is_banned"] = False
-#                     return
-#     except IntegrityError: pass
-#     finally: globals.logger.info(f"-> create_user execution time: {time.time() - start_time}")
+
+async def create_user(user_id: int, ref_link: str = None):
+        user = await User.objects.get_or_create(user_id=user_id, defaults={"created": datetime.utcnow(), "last_seen": datetime.utcnow(), "ref_link": "None", "is_banned": False})
+        # if user_id in users_ids:
+        #     for user in users:
+        #         if user.user_id == user_id:
+        #             user.last_seen = datetime.utcnow()
+        #             user.is_banned = False
+        #             break
+
+        #     user = await User.objects.get(user_id=user_id)
+        #     await user.update(last_seen=datetime.utcnow(), is_banned=False)
+        # else:
+        #     await User.objects.create(user_id=user_id, created=datetime.utcnow(), last_seen=datetime.utcnow(), ref_link=ref_link, is_banned=False)
 
 async def create_audio(owner_id: int, audio_id: int, artist: str, title: str, duration: int):
     store_id: str = f"{owner_id}_{audio_id}"
@@ -76,22 +56,22 @@ async def get_audio(owner_id: int, audio_id: int):
     if len(audios) == 0: return None
     else: return audios[0]
 
-# async def user_has_audio(user_id: int, owner_id: int, audio_id: int):
-#     count = await UserAudio.objects.filter(user_id=user_id, owner_id=owner_id, audio_id=audio_id).count()
-#     if count == 0:
-#         return False
-#     else:
-#         return True
-#
-# async def user_get_audios(user_id: int):
-#     return await UserAudio.objects.filter(user_id=user_id).all()
-#
-# async def user_add_audio(user_id: int, owner_id: int, audio_id: int):
-#     await UserAudio.objects.create(user_id=user_id, owner_id=owner_id, audio_id=audio_id)
-#
-# async def user_remove_audio(user_id: int, owner_id: int, audio_id: int):
-#     audio = await UserAudio.objects.get(user_id=user_id, owner_id=owner_id, audio_id=audio_id)
-#     await audio.delete()
+async def user_has_audio(user_id: int, owner_id: int, audio_id: int):
+    count = await UserAudio.objects.filter(user_id=user_id, owner_id=owner_id, audio_id=audio_id).count()
+    if count == 0:
+        return False
+    else:
+        return True
+
+async def user_get_audios(user_id: int):
+    return await UserAudio.objects.filter(user_id=user_id).all()
+
+async def user_add_audio(user_id: int, owner_id: int, audio_id: int):
+    await UserAudio.objects.create(user_id=user_id, owner_id=owner_id, audio_id=audio_id)
+
+async def user_remove_audio(user_id: int, owner_id: int, audio_id: int):
+    audio = await UserAudio.objects.get(user_id=user_id, owner_id=owner_id, audio_id=audio_id)
+    await audio.delete()
 
 async def last_day_users():
     return await User.objects.filter(last_seen__gt=(datetime.utcnow() - timedelta(days=1))).count()

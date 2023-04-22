@@ -15,7 +15,7 @@ async def ad_command(message: Message):
 
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(message.from_user.id)
+        await database.create_user(message.from_user.id)
 
         #IF not admin
         if message.from_user.id not in config["admins_telegram_ids"]:
@@ -56,7 +56,7 @@ async def ad_command(message: Message):
 @dispatcher.callback_query_handler(text="ad_verify")
 async def ad_callback(query: CallbackQuery):
     try:
-        await globals.CompleteCache.create_user(query.from_user.id)
+        await database.create_user(query.from_user.id)
 
         #IF not admin
         if query.from_user.id not in config["admins_telegram_ids"]:

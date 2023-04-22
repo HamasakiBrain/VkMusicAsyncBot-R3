@@ -3,5 +3,4 @@
 *.zip
 env/
 cache/
-cache_musics/
 config.json

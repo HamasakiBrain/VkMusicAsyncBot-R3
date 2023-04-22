@@ -3,6 +3,7 @@ from aiogram.utils.exceptions import MessageNotModified, BotBlocked, InvalidQuer
 from objects.globals import dispatcher, logger, musicapi, config, bot
 from objects import globals
 from modules import database
+from aiogram.utils import markdown
 from modules.utils import convert_from_seconds, paginate
 import random
 from gifs import gifs
@@ -14,15 +15,14 @@ bot_token = config["telegram_token"]
 async def new_releases_command(message: Message):
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(message.from_user.id)
-        globals.cache_user_page(message.from_user.id, "new_releases_back_0")
-
-        if globals.cache.new_songs_downloaded:
+        await database.create_user(message.from_user.id)
+        test = globals.cache_user_page(message.from_user.id, "new_releases_back_0")
+        if globals.cache != None and globals.cache.new_songs_downloaded:
             data = list(paginate(globals.cache.new_songs, globals.config["tracks_on_page"]))[0]
         else:
             new_songs_data = await musicapi.new_songs()
             if new_songs_data is None:
-                await message.reply("Нам не удалось найти аудиозаписи.")
+                await message.reply(markdown.escape_md("Нам не удалось найти аудиозаписи."))
                 return
             data = list(paginate(new_songs_data["list"], globals.config["tracks_on_page"]))[0]
 
@@ -32,7 +32,7 @@ async def new_releases_command(message: Message):
             tracks.append(track)
 
         if len(tracks) == 0:
-            await message.reply("Нам не удалось найти аудиозаписи.")
+            await message.reply(markdown.escape_md("Нам не удалось найти аудиозаписи."))
             return
 
         markup = InlineKeyboardMarkup(row_width=2)
@@ -54,22 +54,22 @@ async def new_releases_command(message: Message):
 async def new_releases_next(query: CallbackQuery):
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(query.from_user.id)
+        await database.create_user(query.from_user.id)
 
         globals.cache_user_page(query.from_user.id, query.data)
         page = int(query.data.split("_")[-1])
 
         if page == 0:
-            return await query.answer("Достигнуто начало списка.")
+            return await query.answer(markdown.escape_md("Достигнуто начало списка."))
 
         new_songs_data = await musicapi.new_songs()
         if new_songs_data is None:
-            await query.answer("Достигнут конец списка.")
+            await query.answer(markdown.escape_md("Достигнут конец списка."))
             return
 
         data = list(paginate(new_songs_data["list"], globals.config["tracks_on_page"]))
         if page >= len(data):
-            return await query.answer("Достигнут конец списка.")
+            return await query.answer(markdown.escape_md("Достигнут конец списка."))
 
         data = data[page]
 
@@ -79,7 +79,7 @@ async def new_releases_next(query: CallbackQuery):
             tracks.append(track)
 
         if len(tracks) == 0:
-            await query.answer("Достигнут конец списка.")
+            await query.answer(markdown.escape_md("Достигнут конец списка."))
             return
 
         markup = InlineKeyboardMarkup(row_width=2)
@@ -99,23 +99,23 @@ async def new_releases_next(query: CallbackQuery):
 async def new_releases_back(query: CallbackQuery):
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(query.from_user.id)
+        await database.create_user(query.from_user.id)
 
         globals.cache_user_page(query.from_user.id, query.data)
         page = int(query.data.split("_")[-1])
 
         if page == 0:
-            await query.answer("Достигнуто начало списка.")
+            await query.answer(markdown.escape_md("Достигнуто начало списка."))
             return
 
         new_songs_data = await musicapi.new_songs()
         if new_songs_data is None:
-            await query.answer("Достигнут конец списка.")
+            await query.answer(markdown.escape_md("Достигнут конец списка."))
             return
         
         data = list(paginate(new_songs_data["list"], globals.config["tracks_on_page"]))
         if len(data) < page:
-            return await query.answer("Достигнут конец списка.")
+            return await query.answer(markdown.escape_md("Достигнут конец списка."))
 
         data = data[page]
 
@@ -125,7 +125,7 @@ async def new_releases_back(query: CallbackQuery):
             tracks.append(track)
 
         if len(tracks) == 0:
-            await query.answer("Достигнуто начало списка.")
+            await query.answer(markdown.escape_md("Достигнуто начало списка."))
             return
 
         markup = InlineKeyboardMarkup(row_width=2)

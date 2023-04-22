@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 async def refs_command(message: Message):
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(message.from_user.id)
+        await database.create_user(message.from_user.id)
         refs: dict = await database.get_refs()
 
         text: str = "Статистика рефералок:\n"
@@ -26,7 +26,7 @@ async def refs_command(message: Message):
 async def remove_ref_command(message: Message):
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(message.from_user.id)
+        await database.create_user(message.from_user.id)
         if message.from_user.id not in config["admins_telegram_ids"]:
             return
 
@@ -48,7 +48,7 @@ async def remove_ref_command(message: Message):
 async def clear_ref_command(message: Message):
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(message.from_user.id)
+        await database.create_user(message.from_user.id)
         if message.from_user.id not in config["admins_telegram_ids"]:
             return
 

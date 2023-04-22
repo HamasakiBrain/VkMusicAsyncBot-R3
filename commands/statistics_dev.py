@@ -8,7 +8,7 @@ from modules import database
 async def devstats_command(message: Message):
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(message.from_user.id)
+        await database.create_user(message.from_user.id)
         if message.from_user.id not in config["admins_telegram_ids"]:
             return
 

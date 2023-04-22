@@ -14,7 +14,7 @@ bot_token = config["telegram_token"]
 async def search_command(message: Message):
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(message.from_user.id)
+        await database.create_user(message.from_user.id)
 
         markup = InlineKeyboardMarkup(row_width=2)
         markup.add(InlineKeyboardButton("🎧 Мои аудиозаписи", callback_data="my_audio_show"))
@@ -30,7 +30,7 @@ async def search_command(message: Message):
 async def search(message: Message):
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(message.from_user.id)
+        await database.create_user(message.from_user.id)
 
         globals.cache_user_page(message.from_user.id, "search_back_0")
         globals.cache_user_search(message.from_user.id, message.text)
@@ -72,7 +72,7 @@ async def search(message: Message):
 async def search_next(query: CallbackQuery):
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(query.from_user.id)
+        await database.create_user(query.from_user.id)
 
         globals.cache_user_page(query.from_user.id, query.data)
         page = int(query.data.split("_")[-1])
@@ -116,7 +116,7 @@ async def search_next(query: CallbackQuery):
 async def search_back(query: CallbackQuery):
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(query.from_user.id)
+        await database.create_user(query.from_user.id)
 
         globals.cache_user_page(query.from_user.id, query.data)
         page = int(query.data.split("_")[-1])

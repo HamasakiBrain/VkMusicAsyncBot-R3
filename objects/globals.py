@@ -3,7 +3,6 @@ from logging import Logger
 from aiogram import Bot, Dispatcher
 from modules.musicapi import MusicAPI
 
-from orm import ModelRegistry
 from databases import Database
 from sqlalchemy import MetaData
 from sqlalchemy.engine.base import Engine
@@ -22,7 +21,7 @@ logger: Logger = None
 musicapi: MusicAPI = None
 
 database: Database = None
-models: ModelRegistry = None
+metadata: MetaData = None
 db_engine: Engine = None
 
 CompleteCache = None

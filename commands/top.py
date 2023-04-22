@@ -15,11 +15,10 @@ bot_token = config["telegram_token"]
 async def top_command(message: Message):
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(message.from_user.id)
+        await database.create_user(message.from_user.id)
 
         globals.cache_user_page(message.from_user.id, "top_back_0")
-
-        if globals.cache.chart_downloaded:
+        if globals.cache != None and globals.cache.chart_downloaded:
             data = list(paginate(globals.cache.chart, globals.config["tracks_on_page"]))[0]
         else:
             data = list(paginate((await musicapi.chart())["list"], globals.config["tracks_on_page"]))[0]
@@ -51,7 +50,7 @@ async def top_command(message: Message):
 async def top_next(query: CallbackQuery):
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(query.from_user.id)
+        await database.create_user(query.from_user.id)
 
         globals.cache_user_page(query.from_user.id, query.data)
         page = int(query.data.split("_")[-1])
@@ -92,7 +91,7 @@ async def top_next(query: CallbackQuery):
 async def top_back(query: CallbackQuery):
     globals.add_usage_stats()
     try:
-        await globals.CompleteCache.create_user(query.from_user.id)
+        await database.create_user(query.from_user.id)
 
         globals.cache_user_page(query.from_user.id, query.data)
         page = int(query.data.split("_")[-1])
